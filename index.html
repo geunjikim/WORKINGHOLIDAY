@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WORKING HOLIDAY — Lookbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Newsreader:ital@1&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FFFDF5;        /* 바소 화이트 */
+    --paper-deep:#FAF5E7;
+    --ink:#1A1A1A;
+    --ink-soft:#4A4A44;
+    --deep:#3B62AB;         /* deep blue */
+    --green:#DAE9C6;        /* dawn green */
+    --line: rgba(26,26,26,0.16);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{ scroll-behavior:smooth; background:#FFFDF5; }
+  body{
+    background:var(--paper);
+    background-color:#FFFDF5;
+    color:var(--ink);
+    font-family:'Noto Sans KR', sans-serif;
+    font-weight:400;
+    overflow-x:hidden;
+  }
+  ::selection{ background:var(--deep); color:var(--paper); }
+
+  .mono{ font-family:'JetBrains Mono', 'Noto Sans KR', monospace; font-weight:400; }
+  .italic{ font-family:'Noto Sans KR', sans-serif; font-style:normal; font-weight:500; }
+
+  /* ---------- texture ---------- */
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    pointer-events:none;
+    z-index:999;
+    opacity:0.035;
+    background-image:
+      repeating-linear-gradient(0deg, #000 0px, transparent 1px, transparent 2px),
+      repeating-linear-gradient(90deg, #000 0px, transparent 1px, transparent 2px);
+    mix-blend-mode:multiply;
+  }
+
+  /* ---------- punch-card progress rail ---------- */
+  .rail{
+    position:fixed;
+    left:28px; top:50%;
+    transform:translateY(-50%);
+    z-index:200;
+    display:flex; flex-direction:column; gap:22px;
+    align-items:flex-start;
+  }
+  .rail-item{
+    display:flex; align-items:center; gap:10px;
+    opacity:0.35;
+    transition:opacity .4s ease;
+  }
+  .rail-item.active{ opacity:1; }
+  .rail-dot{
+    width:9px; height:9px; border-radius:50%;
+    border:1.4px solid var(--ink);
+    background:transparent;
+    position:relative;
+    flex-shrink:0;
+    transition:all .35s ease;
+  }
+  .rail-item.active .rail-dot{
+    background:var(--deep);
+    border-color:var(--deep);
+    box-shadow:0 0 0 4px rgba(31,70,144,0.18);
+  }
+  .rail-label{
+    font-size:10px; letter-spacing:.06em;
+    white-space:nowrap;
+  }
+  @media (max-width:880px){ .rail{ display:none; } }
+
+  /* ---------- hero ---------- */
+  .hero{
+    min-height:100vh;
+    display:flex; flex-direction:column;
+    justify-content:center;
+    padding:14vh 8vw 10vh;
+    position:relative;
+    background:var(--deep);
+    color:var(--paper);
+  }
+  .hero::after{
+    content:"";
+    position:absolute; left:0; right:0; bottom:0;
+    height:18vh;
+    background:linear-gradient(to bottom, transparent, var(--paper));
+    pointer-events:none;
+    z-index:1;
+  }
+  .hero-eyebrow{
+    font-size:11px; letter-spacing:.18em;
+    color:rgba(255,253,245,0.6);
+    margin-bottom:28px;
+    display:flex; gap:10px; align-items:center;
+  }
+  .hero-eyebrow .stamp-chip{
+    border:1px solid var(--green); color:var(--green);
+    padding:3px 8px; border-radius:2px;
+    font-family:'JetBrains Mono', 'Noto Sans KR', monospace;
+    font-size:10px;
+    transform:rotate(-2deg);
+  }
+  .hero-season{
+    font-family:'JetBrains Mono', 'Noto Sans KR', monospace;
+    font-weight:500;
+    font-size:11px;
+    letter-spacing:.16em;
+    color:rgba(255,253,245,0.7);
+    margin-bottom:14px;
+  }
+  .hero h1{
+    font-size:clamp(38px, 7vw, 92px);
+    font-weight:700;
+    letter-spacing:-0.02em;
+    line-height:1.15;
+    color:var(--paper);
+  }
+  .hero h1 .sans{
+    font-family:'Noto Sans KR', sans-serif;
+    font-weight:700;
+  }
+  .hero h1 em{
+    font-family:'Newsreader', serif;
+    font-style:italic;
+    font-weight:400;
+    font-size:1.18em;
+    color:var(--green);
+  }
+  .hero-sub{
+    margin-top:34px;
+    max-width:560px;
+    font-family:'JetBrains Mono', 'Noto Sans KR', monospace;
+    font-size:13px;
+    line-height:1.9;
+    color:rgba(255,253,245,0.75);
+    border-left:2px solid var(--green);
+    padding-left:18px;
+    min-height:90px;
+  }
+  .cursor{
+    display:inline-block; width:7px; height:13px;
+    background:var(--paper); margin-left:2px;
+    animation:blink 1s steps(1) infinite;
+    vertical-align:-2px;
+  }
+  @keyframes blink{ 50%{ opacity:0; } }
+
+  .scroll-cue{
+    position:absolute; bottom:6vh; right:8vw;
+    z-index:2;
+    font-family:'JetBrains Mono', 'Noto Sans KR', monospace;
+    font-size:11px; font-weight:700; letter-spacing:.1em;
+    color:#000000;
+    display:flex; align-items:center; gap:10px;
+  }
+  .scroll-cue::after{
+    content:""; width:1px; height:34px;
+    background:#000000;
+    animation:drop 1.8s ease-in-out infinite;
+  }
+  @keyframes drop{ 0%{transform:scaleY(0); transform-origin:top;} 50%{transform:scaleY(1); transform-origin:top;} 50.01%{transform-origin:bottom;} 100%{transform:scaleY(0); transform-origin:bottom;} }
+
+  /* ---------- intro statement ---------- */
+  .statement{
+    padding:16vh 8vw;
+    background-color:#FFFDF5;
+  }
+  .statement p{
+    font-size:clamp(17px, 2.2vw, 24px);
+    line-height:1.5;
+    max-width:920px;
+    font-weight:500;
+    letter-spacing:-0.01em;
+  }
+  .statement p .accent{
+    font-family:'Noto Sans KR', sans-serif; font-style:normal; font-weight:500;
+    color:var(--deep);
+  }
+
+  /* ---------- look card (shown inside bottle detail view) ---------- */
+  .look{
+    display:flex;
+    min-height:50vh;
+    align-items:stretch;
+  }
+  .look.reverse{ flex-direction:row-reverse; }
+  .look-visual, .look-info{
+    width:50%;
+    padding:7vh 6vw;
+    display:flex; flex-direction:column; justify-content:center;
+  }
+  .look-visual{
+    background:var(--swatch, var(--paper));
+    position:relative;
+    overflow:hidden;
+  }
+  .cut-viewport{
+    width:100%; aspect-ratio:3/4;
+    overflow:hidden;
+    position:relative;
+    opacity:0; transform:translateY(40px);
+    transition:opacity 1s ease, transform 1s ease;
+    cursor:grab;
+    touch-action:pan-y;
+  }
+  .look.in-view .cut-viewport{ opacity:1; transform:translateY(0); }
+  .cut-viewport:active{ cursor:grabbing; }
+  .cut-track{
+    display:flex;
+    height:100%;
+    transition:transform .45s cubic-bezier(.22,1,.36,1);
+  }
+  .cut-track.dragging{ transition:none; }
+  .cut-slide{
+    flex:0 0 90%;
+    margin-right:10px;
+    height:100%;
+    border:1px solid var(--ink);
+    position:relative;
+    box-sizing:border-box;
+    overflow:hidden;
+  }
+  .cut-slide img{
+    width:100%; height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  .cut-track.single .cut-slide{
+    flex:0 0 100%;
+    margin-right:0;
+  }
+
+  .cut-counter{
+    position:absolute; bottom:14px; left:14px;
+    font-family:'JetBrains Mono', 'Noto Sans KR', monospace;
+    font-size:10px; letter-spacing:.06em;
+    background:var(--paper); border:1px solid var(--ink);
+    padding:5px 9px;
+    z-index:3;
+    pointer-events:none;
+  }
+
+  .look-info{
+    opacity:0; transform:translateY(24px);
+    transition:opacity .9s ease .15s, transform .9s ease .15s;
+  }
+  .look.in-view .look-info{ opacity:1; transform:translateY(0); }
+
+  .look-index{
+    font-family:'JetBrains Mono', 'Noto Sans KR', monospace;
+    font-size:12px; color:var(--deep); letter-spacing:.06em;
+    margin-bottom:18px;
+  }
+  .look-title{
+    font-size:clamp(22px, 2.8vw, 32px);
+    line-height:1.1; margin-bottom:20px; font-weight:700;
+  }
+  .look-title em{
+    font-family:'Noto Sans KR', sans-serif; font-style:normal; font-weight:500;
+    color:var(--deep);
+  }
+  .look-desc{
+    font-size:13px; line-height:1.85; color:var(--ink-soft);
+    max-width:460px; margin-bottom:28px;
+  }
+  .look-items{
+    list-style:none;
+    font-family:'JetBrains Mono', 'Noto Sans KR', monospace; font-size:11px;
+    display:flex; flex-direction:column; gap:9px;
+    border-top:1px solid var(--line); padding-top:18px;
+    max-width:420px;
+  }
+  .look-items li{ display:flex; justify-content:space-between; gap:16px; color:var(--ink-soft); }
+  .look-items li span:last-child{ color:var(--ink); text-align:right; }
+
+  @media (max-width:880px){
+    .look, .look.reverse{ flex-direction:column; }
+    .look-visual, .look-info{ width:100%; padding:5vh 6vw; }
+  }
+
+  /* ---------- closing / outro ---------- */
+  .outro{
+    min-height:40vh;
+    display:flex; flex-direction:column; justify-content:center;
+    padding:8vh 8vw;
+    background:var(--deep);
+    color:var(--paper);
+  }
+  .outro-eyebrow{
+    font-family:'JetBrains Mono', 'Noto Sans KR', monospace; font-size:10px;
+    letter-spacing:.14em; color:var(--green); margin-bottom:24px;
+  }
+  .outro h2{
+    font-size:clamp(26px, 4.2vw, 48px);
+    line-height:1.15; max-width:900px; font-weight:700;
+  }
+  .outro h2 em{
+    font-family:'Noto Sans KR', sans-serif; font-style:normal; font-weight:500;
+    color:var(--green);
+  }
+  .outro-foot{
+    margin-top:60px;
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:20px;
+    font-family:'JetBrains Mono', 'Noto Sans KR', monospace; font-size:18px;
+    color:rgba(255,253,245,0.7);
+  }
+  /* ---------- wave strip (minimal) ---------- */
+  .wave-strip{
+    height:34px;
+    background-color:#FFFDF5;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 34'%3E%3Cpath d='M0 17 C 25 -4 25 38 50 17 C 75 -4 75 38 100 17' stroke='%233B62AB' stroke-width='2.4' fill='none' opacity='0.7'/%3E%3C/svg%3E");
+    background-repeat:repeat-x;
+    background-size:99px 34px;
+    animation:waveScroll 6s linear infinite;
+  }
+  @keyframes waveScroll{ from{ background-position-x:0; } to{ background-position-x:-90px; } }
+
+  /* ---------- ocean: bottle interaction ---------- */
+  .ocean{
+    position:relative;
+    overflow:hidden;
+    display:flex; flex-direction:column;
+    background:linear-gradient(180deg, var(--paper) 0%, #C7DAF2 14%, var(--deep) 100%);
+  }
+  .ocean-header{
+    padding:7vh 8vw 3vh;
+    position:relative; z-index:4;
+    color:var(--paper);
+  }
+  .ocean-hint{
+    font-family:'Noto Sans KR', sans-serif;
+    font-weight:500;
+    font-size:13px;
+    letter-spacing:-0.01em;
+    color:var(--deep);
+  }
+  .ocean-surface{
+    position:absolute; inset:0;
+  }
+  .ocean-stage{
+    position:relative;
+    min-height:62vh;
+  }
+  .ocean.viewing .ocean-stage{
+    display:none;
+  }
+
+  .look-detail{
+    display:none;
+    flex-direction:column;
+    background:var(--paper);
+    animation:detailIn .5s ease both;
+  }
+  .ocean.viewing .look-detail{
+    display:flex;
+  }
+  @keyframes detailIn{
+    from{ opacity:0; transform:translateY(16px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  .look-detail-inner{ display:flex; }
+  .look-detail-inner .look{ flex:1; min-height:60vh; }
+  .back-btn{
+    align-self:flex-end;
+    margin-top:32px;
+    padding:9px 16px;
+    border:1px solid var(--ink);
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'JetBrains Mono', 'Noto Sans KR', monospace;
+    font-size:11px; letter-spacing:.04em;
+    cursor:pointer;
+    transition:background .25s ease, color .25s ease, border-color .25s ease;
+  }
+  .back-btn:hover{ background:var(--deep); color:var(--paper); border-color:var(--deep); }
+  @media (max-width:880px){
+    .look-detail-inner .look{ min-height:auto; }
+  }
+
+  .bottle{
+    position:absolute;
+    width:46px; height:70px;
+    padding:8px;
+    box-sizing:border-box;
+    cursor:pointer;
+    z-index:3;
+    animation: bottleDrift var(--dur,20s) ease-in-out infinite;
+    transition: opacity .5s ease, transform .5s cubic-bezier(.34,1.56,.64,1);
+  }
+  .bottle-bob{
+    width:100%; height:100%;
+    position:relative;
+    animation: bottleBob var(--bob,4s) ease-in-out infinite;
+    animation-delay: var(--bobdelay, 0s);
+  }
+  .bottle-cork{
+    position:absolute; left:50%; top:0; transform:translateX(-50%);
+    width:11px; height:13px;
+    background:var(--green);
+    border:1.4px solid rgba(255,253,245,0.9);
+    border-radius:2px 2px 1px 1px;
+  }
+  .bottle-glass{
+    position:absolute; left:50%; top:12px; transform:translateX(-50%);
+    width:24px; height:46px;
+    background:rgba(255,253,245,0.16);
+    border:1.4px solid rgba(255,253,245,0.85);
+    border-radius:4px 4px 11px 11px;
+  }
+  .bottle-num{
+    position:absolute; left:50%; top:30px; transform:translateX(-50%);
+    font-family:'JetBrains Mono', 'Noto Sans KR', monospace; font-size:9px; letter-spacing:.02em;
+    color:var(--paper);
+  }
+  .bottle:hover .bottle-bob{ filter:brightness(1.15); }
+  .bottle.opened{
+    animation:none;
+    opacity:0;
+    transform:translateY(-50px) scale(0.5) rotate(14deg);
+    pointer-events:none;
+  }
+  @keyframes bottleDrift{
+    0%{ transform:translateX(0); }
+    50%{ transform:translateX(var(--driftx, 30px)); }
+    100%{ transform:translateX(0); }
+  }
+  @keyframes bottleBob{
+    0%,100%{ margin-top:0; }
+    50%{ margin-top:-16px; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .bottle, .bottle-bob{ animation:none; }
+  }
+
+  /* revealed look cards appear instantly, no scroll-fade needed */
+  #lookDetailInner .look{ opacity:1; }
+  #lookDetailInner .look .cut-viewport,
+  #lookDetailInner .look .look-info{ opacity:1; transform:none; }
+
+  /* ---------- ambient sound toggle ---------- */
+  .sound-toggle{
+    position:fixed; left:16px; bottom:16px; z-index:300;
+    display:flex; align-items:center; gap:8px;
+    padding:11px 16px;
+    border:1px solid var(--ink);
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'JetBrains Mono', 'Noto Sans KR', monospace;
+    font-size:12px; letter-spacing:.05em;
+    cursor:pointer;
+    transition:background .25s ease, color .25s ease, transform .25s ease;
+  }
+  .sound-toggle:hover{ transform:translateY(-2px); }
+  .sound-toggle .sound-icon{ font-size:16px; transition:transform .4s ease; }
+  .sound-toggle[aria-pressed="true"]{
+    background:var(--deep); color:var(--paper); border-color:var(--deep);
+  }
+  .sound-toggle[aria-pressed="true"] .sound-icon{ animation:waveBob 1.6s ease-in-out infinite; }
+  @keyframes waveBob{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-3px); } }
+  @media (max-width:560px){
+    .sound-toggle{ padding:9px 12px; }
+    .sound-toggle .sound-label{ font-size:10px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-season">2036 SPRING/SUMMER LOOKBOOK</div>
+  <h1><span class="sans">WORKING</span><br><em>holiday</em></h1>
+  <div class="hero-sub mono" id="typed"></div>
+  <div class="scroll-cue">SCROLL TO 출근</div>
+</section>
+
+<!-- STATEMENT -->
+<section class="statement">
+  <p>일을 AI에게 맡길 수 있는 시대가 오면 출근은 왜 하는 걸까요.<br><span class="accent">그래도 사람은 어딘가로 향할 것 같았습니다.</span><br>그때의 오피스웨어는 지금보다 조금 더 휴가를 닮아있지 않을까요.</p>
+</section>
+
+<div class="wave-strip" aria-hidden="true"></div>
+
+<!-- OCEAN: bottle interaction -->
+<section class="ocean" id="oceanSection">
+  <div class="ocean-header">
+    <p class="ocean-hint" id="oceanHint">떠내려온 유리병을 집어서 룩을 꺼내보세요</p>
+  </div>
+  <div class="ocean-stage" id="oceanStage">
+    <div class="ocean-surface" id="oceanSurface"></div>
+  </div>
+  <div class="look-detail" id="lookDetail">
+    <div class="look-detail-inner" id="lookDetailInner"></div>
+  </div>
+</section>
+
+<!-- OUTRO -->
+<section class="outro">
+  <div class="outro-foot">
+    <span id="clock" class="mono"></span>
+  </div>
+</section>
+
+<button id="soundToggle" class="sound-toggle" type="button" aria-pressed="false">
+  <span class="sound-icon">〜</span><span class="sound-label">파도 소리</span>
+</button>
+
+<script>
+// ---- look data (placeholder copy — swap visuals later) ----
+const looks = [
+  {
+    idx:"LOOK 01", tag:"09:02 AM — CHECK IN",
+    title:["디자이너 겸 마케터 겸 개발자 겸 ", "어쩌고", ""],
+    desc:"셔츠형 원피스는 멀리서 보면 정장, 가까이서 보면 잠수복 위에 걸친 가운 같다.",
+    items:[["TOP","SHEER STRIPE LAYERED SHIRT"],["BELT","BLACK LEATHER BELT"],["BOTTOM","RUFFLE HEM CROPPED PANTS"],["BAG","NANO CHAIN BAG"],["SHOES","BLACK TABI FLATS"]]
+  },
+  {
+    idx:"LOOK 02", tag:"11:30 AM — STILL NO MEETINGS",
+    title:["하지만 넌 ", "대표잖니..", ""],
+    desc:"",
+    items:[["TOP #1","ASH BLUE OVERSIZED SHIRT"],["TOP #2","YELLOW STRIPE COLLAR T"],["WAIST","COLORBLOCK SUMMER CARDIGAN"],["BOTTOM","WASHED WIDE DENIM SHORTS"],["SHOES","BLACK CHUNKY LACE-UPS"]]
+  },
+  {
+    idx:"LOOK 03", tag:"01:15 PM — LUNCH, ALONE",
+    title:["", "대왕지각", " 정말 안죄송해"],
+    desc:"",
+    items:[["HEAD","CAMO HEADBAND"],["TOP #1","BEIGE SHEER SHIRTS"],["TOP #2","SHEER YELLOW GREEN T"],["BOTTOM #1","NAVY DRAWSTRING MINI SKIRT"],["BOTTOM #2","BLACK LACE CAPRI LEGGINGS"],["SHOES","BLACK BALLERINA FLATS"]]
+  },
+  {
+    idx:"LOOK 04", tag:"02:40 PM — AI STILL WORKING",
+    title:["회사", "줄까?", ""],
+    desc:"",
+    items:[["HEAD","CREAM BUCKET HAT"],["TOP #1","SKY BLUE OXFORD SHIRT"],["TOP #2","CREAM RIBBON VEST"],["BOTTOM","NAVY MINI SHORTS"],["BAG","KHAKI MESH TOTE"],["SHOES","KHAKI TALL LACE-UP BOOTS"]]
+  },
+  {
+    idx:"LOOK 05", tag:"04:50 PM — 0 NEW TASKS",
+    title:["아유.. ", "하기 싫어...", ""],
+    desc:"",
+    items:[["TOP #1","BLUE STRIPE SHIRT"],["TOP #2","GREY KNIT VEST"],["BOTTOM","CHARCOAL CORDUROY CAPRI PANTS"],["SHOES","BLACK LEATHER SLOUCH BOOTS"]]
+  },
+  {
+    idx:"LOOK 06", tag:"05:20 PM — STATUS: AWAY",
+    title:["", "회사나가", "고싶다"],
+    desc:"",
+    items:[["HEAD","BLACK FLORAL BANDANA"],["TOP","BLACK SATIN DRAWSTRING SLEEVELESS"],["BOTTOM","WASHED DISTRESSED WIDE JEANS"],["SHOES","BLACK PATENT POINTED HEEL"]]
+  },
+  {
+    idx:"LOOK 07", tag:"05:45 PM — AUTO-REPLY SENT TWICE",
+    title:["", "오출완", ""],
+    desc:"",
+    items:[["TOP","BLUE DRAPED COWL NECK TOP"],["BOTTOM","GREY HAREM PANTS"],["BAG","BLACK STRING BACKPACK"],["SHOES","BLACK EYELET KITTEN HEELS"]]
+  },
+  {
+    idx:"LOOK 08", tag:"06:00 PM — CLOCKED OUT",
+    title:["", "재택", "근무"],
+    desc:"",
+    items:[["TOP","PURPLE OVERSIZED UTILITY SHIRT"],["BOTTOM #1","CREAM PLEATED MIDI SKIRT"],["BOTTOM #2","CREAM BOOTCUT LEGGINGS"],["SHOES","BLACK STRAPPY SANDALS"]],
+    cuts:2
+  }
+];
+
+const oceanSurface = document.getElementById('oceanSurface');
+const oceanSection = document.getElementById('oceanSection');
+const lookDetail = document.getElementById('lookDetail');
+const lookDetailInner = document.getElementById('lookDetailInner');
+const hintEl = document.getElementById('oceanHint');
+const swatches = ['var(--paper)', 'var(--paper-deep)'];
+const CUTS_PER_LOOK = 4;
+const angles = [160, 200, 120, 240, 80, 280];
+let openedCount = 0;
+
+function showLook(l, i){
+  const cutCount = l.cuts || CUTS_PER_LOOK;
+  const sec = document.createElement('section');
+  sec.className = 'look in-view' + (i % 2 === 1 ? ' reverse' : '') + (cutCount <= 1 ? ' note' : '');
+  sec.innerHTML = `
+    <div class="look-visual" style="--swatch:${swatches[i % swatches.length]}">
+      <div class="cut-viewport">
+        <div class="cut-track${cutCount <= 1 ? ' single' : ''}">
+          ${Array.from({length: cutCount}).map((_, c) => `
+            <div class="cut-slide" style="background:linear-gradient(${angles[c % angles.length]}deg, var(--paper) 0%, var(--swatch, var(--paper-deep)) 55%, var(--deep) 130%)">
+              <img src="images/look-${String(i + 1).padStart(2, '0')}/cut-${String(c + 1).padStart(2, '0')}.jpg" alt="${l.idx} cut ${c + 1}" loading="lazy" onerror="this.style.display='none'">
+            </div>
+          `).join('')}
+        </div>
+        ${cutCount > 1 ? `<span class="cut-counter" data-cut-counter>01/0${cutCount}</span>` : ''}
+      </div>
+    </div>
+    <div class="look-info">
+      <div class="look-index">${l.idx}</div>
+      <div class="look-title">${l.title[0]}<em>${l.title[1]}</em>${l.title[2]}</div>
+      <ul class="look-items">
+        ${l.items.map(it => `<li><span>${it[0]}</span><span>${it[1]}</span></li>`).join('')}
+      </ul>
+      <button class="back-btn" type="button">← 뒤로</button>
+    </div>
+  `;
+  lookDetailInner.innerHTML = '';
+  lookDetailInner.appendChild(sec);
+
+  if(cutCount > 1){
+    const viewport = sec.querySelector('.cut-viewport');
+    const track = sec.querySelector('.cut-track');
+    const counter = sec.querySelector('[data-cut-counter]');
+    const slideGap = 10;
+    let cutIndex = 0;
+    let startX = 0;
+    let currentX = 0;
+    let dragging = false;
+
+    const slideWidth = () => viewport.getBoundingClientRect().width * 0.9 + slideGap;
+
+    const goTo = (index) => {
+      cutIndex = Math.max(0, Math.min(cutCount - 1, index));
+      track.style.transform = `translateX(-${cutIndex * slideWidth()}px)`;
+      counter.textContent = `0${cutIndex + 1}/0${cutCount}`;
+    };
+
+    const onDown = (x) => {
+      dragging = true;
+      startX = x;
+      currentX = 0;
+      track.classList.add('dragging');
+    };
+    const onMove = (x) => {
+      if(!dragging) return;
+      currentX = x - startX;
+      track.style.transform = `translateX(${-(cutIndex * slideWidth()) + currentX}px)`;
+    };
+    const onUp = () => {
+      if(!dragging) return;
+      dragging = false;
+      track.classList.remove('dragging');
+      if(currentX < -40) goTo(cutIndex + 1);
+      else if(currentX > 40) goTo(cutIndex - 1);
+      else goTo(cutIndex);
+    };
+
+    viewport.addEventListener('pointerdown', (e) => onDown(e.clientX));
+    viewport.addEventListener('pointermove', (e) => onMove(e.clientX));
+    viewport.addEventListener('pointerup', onUp);
+    viewport.addEventListener('pointerleave', onUp);
+
+    window.addEventListener('resize', () => goTo(cutIndex));
+  }
+
+  sec.querySelector('.back-btn').addEventListener('click', () => {
+    oceanSection.classList.remove('viewing');
+    oceanSection.scrollIntoView({ behavior:'smooth', block:'start' });
+  });
+
+  oceanSection.classList.add('viewing');
+  lookDetail.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function openBottle(bottle, l, i){
+  if(bottle.classList.contains('opened')) return;
+  bottle.classList.add('opened');
+  openedCount++;
+  setTimeout(() => showLook(l, i), 320);
+
+  if(openedCount === looks.length){
+    hintEl.textContent = '8개 다 꺼냈어요. 내일 출근도 힘내봐요!';
+  }
+}
+
+
+looks.forEach((l, i) => {
+  const left = (Math.random() * 72 + 6).toFixed(1);
+  const top = (Math.random() * 58 + 6).toFixed(1);
+  const dur = (16 + Math.random() * 10).toFixed(1) + 's';
+  const bob = (3.2 + Math.random() * 2.2).toFixed(1) + 's';
+  const delay = (-Math.random() * 16).toFixed(1) + 's';
+  const bobDelay = (-Math.random() * 4).toFixed(1) + 's';
+  const driftx = (22 + Math.random() * 42).toFixed(0) + 'px';
+
+  const bottle = document.createElement('div');
+  bottle.className = 'bottle';
+  bottle.style.left = left + '%';
+  bottle.style.top = top + '%';
+  bottle.style.setProperty('--dur', dur);
+  bottle.style.setProperty('--bob', bob);
+  bottle.style.setProperty('--bobdelay', bobDelay);
+  bottle.style.setProperty('--driftx', driftx);
+  bottle.style.animationDelay = delay;
+  bottle.setAttribute('role', 'button');
+  bottle.setAttribute('aria-label', `${l.idx} 유리병 열기`);
+  bottle.innerHTML = `
+    <div class="bottle-bob">
+      <div class="bottle-cork"></div>
+      <div class="bottle-glass"></div>
+      <div class="bottle-num mono">${String(i + 1).padStart(2, '0')}</div>
+    </div>
+  `;
+  bottle.addEventListener('click', () => openBottle(bottle, l, i));
+  oceanSurface.appendChild(bottle);
+});
+
+// ---- typewriter hero ----
+const typedEl = document.getElementById('typed');
+const fullText = "RE: 자동회신\\n작업은 AI가 진행 중입니다.\\n저는 자리에 있습니다. 아마 편한 차림으로.";
+let ci = 0;
+function type(){
+  if(ci <= fullText.length){
+    typedEl.innerHTML = fullText.slice(0, ci).replace(/\\n/g,'<br>') + '<span class="cursor"></span>';
+    ci++;
+    setTimeout(type, 28);
+  }
+}
+type();
+
+// ---- mock clock ----
+const clockEl = document.getElementById('clock');
+function tick(){
+  const d = new Date();
+  clockEl.textContent = d.toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+}
+tick(); setInterval(tick, 1000);
+
+// ---- synthesized ambient wave sound ----
+let audioCtx = null;
+let waveNodes = null;
+let waveOn = false;
+const soundBtn = document.getElementById('soundToggle');
+
+function buildWaveSound(ctx){
+  const bufferSize = ctx.sampleRate * 2;
+  const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = noiseBuffer.getChannelData(0);
+  for(let i = 0; i < bufferSize; i++){ data[i] = Math.random() * 2 - 1; }
+
+  const noise = ctx.createBufferSource();
+  noise.buffer = noiseBuffer;
+  noise.loop = true;
+
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.value = 900;
+
+  const gain = ctx.createGain();
+  gain.gain.value = 0;
+
+  const lfo = ctx.createOscillator();
+  lfo.frequency.value = 0.13; // slow swell, like waves rolling in
+  const lfoGain = ctx.createGain();
+  lfoGain.gain.value = 0.09;
+  lfo.connect(lfoGain);
+  lfoGain.connect(gain.gain);
+
+  noise.connect(filter);
+  filter.connect(gain);
+  gain.connect(ctx.destination);
+
+  noise.start();
+  lfo.start();
+
+  return { noise, filter, gain, lfo };
+}
+
+soundBtn.addEventListener('click', () => {
+  if(!audioCtx){
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    waveNodes = buildWaveSound(audioCtx);
+  }
+
+  waveOn = !waveOn;
+  soundBtn.setAttribute('aria-pressed', String(waveOn));
+
+  const applyGain = () => {
+    const target = waveOn ? 0.28 : 0;
+    waveNodes.gain.gain.cancelScheduledValues(audioCtx.currentTime);
+    waveNodes.gain.gain.setValueAtTime(waveNodes.gain.gain.value, audioCtx.currentTime);
+    waveNodes.gain.gain.linearRampToValueAtTime(target, audioCtx.currentTime + 0.8);
+  };
+
+  if(audioCtx.state === 'suspended'){
+    audioCtx.resume().then(applyGain);
+  } else {
+    applyGain();
+  }
+});
+</script>
+
+</body>
+</html>
