@@ -328,7 +328,6 @@
   /* ---------- ocean: bottle interaction ---------- */
   .ocean{
     position:relative;
-    overflow:hidden;
     display:flex; flex-direction:column;
     background:linear-gradient(180deg, var(--paper) 0%, #C7DAF2 14%, var(--deep) 100%);
   }
@@ -346,10 +345,11 @@
   }
   .ocean-surface{
     position:absolute; inset:0;
+    overflow:hidden;
   }
   .ocean-stage{
     position:relative;
-    min-height:62vh;
+    min-height:72vh;
   }
   .ocean.viewing .ocean-stage{
     display:none;
@@ -394,7 +394,7 @@
     box-sizing:border-box;
     cursor:pointer;
     z-index:3;
-    animation: bottleDrift var(--dur,20s) ease-in-out infinite;
+    animation: bottleDrift 20s ease-in-out infinite;
     transition: opacity .5s ease, transform .5s cubic-bezier(.34,1.56,.64,1);
   }
   .bottle-bob{
@@ -430,9 +430,32 @@
     pointer-events:none;
   }
   @keyframes bottleDrift{
-    0%{ transform:translateX(0); }
-    50%{ transform:translateX(var(--driftx, 30px)); }
-    100%{ transform:translateX(0); }
+    0%  { transform:translate(0px, 0px); }
+    25% { transform:translate(30px, -20px); }
+    50% { transform:translate(15px, -35px); }
+    75% { transform:translate(-20px, -15px); }
+    100%{ transform:translate(0px, 0px); }
+  }
+  @keyframes bottleDrift2{
+    0%  { transform:translate(0px, 0px); }
+    25% { transform:translate(-25px, -30px); }
+    50% { transform:translate(-40px, -10px); }
+    75% { transform:translate(-10px, -40px); }
+    100%{ transform:translate(0px, 0px); }
+  }
+  @keyframes bottleDrift3{
+    0%  { transform:translate(0px, 0px); }
+    25% { transform:translate(40px, -15px); }
+    50% { transform:translate(20px, -40px); }
+    75% { transform:translate(35px, -25px); }
+    100%{ transform:translate(0px, 0px); }
+  }
+  @keyframes bottleDrift4{
+    0%  { transform:translate(0px, 0px); }
+    25% { transform:translate(-30px, -25px); }
+    50% { transform:translate(10px, -45px); }
+    75% { transform:translate(-15px, -20px); }
+    100%{ transform:translate(0px, 0px); }
   }
   @keyframes bottleBob{
     0%,100%{ margin-top:0; }
@@ -588,7 +611,7 @@ function showLook(l, i){
         <div class="cut-track${cutCount <= 1 ? ' single' : ''}">
           ${Array.from({length: cutCount}).map((_, c) => `
             <div class="cut-slide" style="background:linear-gradient(${angles[c % angles.length]}deg, var(--paper) 0%, var(--swatch, var(--paper-deep)) 55%, var(--deep) 130%)">
-              <img src="images/look-${String(i + 1).padStart(2, '0')}/cut-${String(c + 1).padStart(2, '0')}.jpg" alt="${l.idx} cut ${c + 1}" loading="lazy" onerror="this.style.display='none'">
+              <img src="image/look${String(i + 1).padStart(2, '0')}/${String(c + 1).padStart(2, '0')}.jpg" alt="${l.idx} cut ${c + 1}" loading="lazy" onerror="this.style.display='none'">
             </div>
           `).join('')}
         </div>
@@ -677,21 +700,22 @@ function openBottle(bottle, l, i){
 looks.forEach((l, i) => {
   const left = (Math.random() * 72 + 6).toFixed(1);
   const top = (Math.random() * 58 + 6).toFixed(1);
-  const dur = (16 + Math.random() * 10).toFixed(1) + 's';
+  const dur = (6 + Math.random() * 3).toFixed(1) + 's';
   const bob = (3.2 + Math.random() * 2.2).toFixed(1) + 's';
   const delay = (-Math.random() * 16).toFixed(1) + 's';
   const bobDelay = (-Math.random() * 4).toFixed(1) + 's';
   const driftx = (22 + Math.random() * 42).toFixed(0) + 'px';
 
+  const driftAnims = ['bottleDrift','bottleDrift2','bottleDrift3','bottleDrift4'];
+  const driftName = driftAnims[i % driftAnims.length];
+
   const bottle = document.createElement('div');
   bottle.className = 'bottle';
   bottle.style.left = left + '%';
   bottle.style.top = top + '%';
-  bottle.style.setProperty('--dur', dur);
+  bottle.style.animation = `${driftName} ${dur} ease-in-out ${delay} infinite`;
   bottle.style.setProperty('--bob', bob);
   bottle.style.setProperty('--bobdelay', bobDelay);
-  bottle.style.setProperty('--driftx', driftx);
-  bottle.style.animationDelay = delay;
   bottle.setAttribute('role', 'button');
   bottle.setAttribute('aria-label', `${l.idx} 유리병 열기`);
   bottle.innerHTML = `
