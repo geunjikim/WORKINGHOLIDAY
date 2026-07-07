@@ -640,8 +640,10 @@ function showLook(l, i){
   sec.innerHTML = `
     <div class="look-visual" style="--swatch:${swatches[i % swatches.length]}">
       <div class="cut-viewport">
+        ${cutCount > 1 ? `
         <button class="cut-nav cut-nav-prev" type="button" aria-label="이전"><div class="cut-nav-icon">‹</div></button>
         <button class="cut-nav cut-nav-next" type="button" aria-label="다음"><div class="cut-nav-icon">›</div></button>
+        ` : ''}
         <div class="cut-track${cutCount <= 1 ? ' single' : ''}">
           ${Array.from({length: cutCount}).map((_, c) => `
             <div class="cut-slide" style="background:linear-gradient(${angles[c % angles.length]}deg, var(--paper) 0%, var(--swatch, var(--paper-deep)) 55%, var(--deep) 130%)">
@@ -676,11 +678,21 @@ function showLook(l, i){
 
     const slideWidth = () => viewport.getBoundingClientRect().width * 0.9 + slideGap;
 
+    const updateNavVisibility = () => {
+      const prevBtn = viewport.querySelector('.cut-nav-prev');
+      const nextBtn = viewport.querySelector('.cut-nav-next');
+      if(prevBtn) prevBtn.style.visibility = cutIndex === 0 ? 'hidden' : 'visible';
+      if(nextBtn) nextBtn.style.visibility = cutIndex === cutCount - 1 ? 'hidden' : 'visible';
+    };
+
     const goTo = (index) => {
       cutIndex = Math.max(0, Math.min(cutCount - 1, index));
       track.style.transform = `translateX(-${cutIndex * slideWidth()}px)`;
       counter.textContent = `0${cutIndex + 1}/0${cutCount}`;
+      updateNavVisibility();
     };
+
+    updateNavVisibility();
 
     const onDown = (x) => {
       dragging = true;
@@ -713,11 +725,19 @@ function showLook(l, i){
     viewport.addEventListener('touchmove', (e) => { e.stopPropagation(); onMove(e.touches[0].clientX); }, { passive:true });
     viewport.addEventListener('touchend', onUp);
 
+    updateNavVisibility();
     window.addEventListener('resize', () => goTo(cutIndex));
   }
 
   sec.querySelector('.back-btn').addEventListener('click', () => {
-    history.back();
+    try { history.back(); } catch(e) {}
+    // fallback: iframe 등 history.back이 안 먹는 환경
+    setTimeout(() => {
+      if(oceanSection.classList.contains('viewing')){
+        oceanSection.classList.remove('viewing');
+        oceanSection.scrollIntoView({ behavior:'smooth', block:'start' });
+      }
+    }, 100);
   });
 
   oceanSection.classList.add('viewing');
