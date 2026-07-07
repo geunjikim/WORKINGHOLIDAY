@@ -211,7 +211,7 @@
     opacity:0; transform:translateY(40px);
     transition:opacity 1s ease, transform 1s ease;
     cursor:grab;
-    touch-action:pan-y;
+    touch-action:none;
   }
   .look.in-view .cut-viewport{ opacity:1; transform:translateY(0); }
   .cut-viewport:active{ cursor:grabbing; }
@@ -677,25 +677,28 @@ function showLook(l, i){
       if(!dragging) return;
       dragging = false;
       track.classList.remove('dragging');
-      if(currentX < -40) goTo(cutIndex + 1);
-      else if(currentX > 40) goTo(cutIndex - 1);
+      if(currentX < -20) goTo(cutIndex + 1);
+      else if(currentX > 20) goTo(cutIndex - 1);
       else goTo(cutIndex);
     };
 
     viewport.addEventListener('pointerdown', (e) => onDown(e.clientX));
-    viewport.addEventListener('pointermove', (e) => onMove(e.clientX));
+    viewport.addEventListener('pointermove', (e) => { e.preventDefault(); onMove(e.clientX); }, { passive:false });
     viewport.addEventListener('pointerup', onUp);
     viewport.addEventListener('pointerleave', onUp);
+    viewport.addEventListener('touchstart', (e) => onDown(e.touches[0].clientX), { passive:true });
+    viewport.addEventListener('touchmove', (e) => { e.stopPropagation(); onMove(e.touches[0].clientX); }, { passive:true });
+    viewport.addEventListener('touchend', onUp);
 
     window.addEventListener('resize', () => goTo(cutIndex));
   }
 
   sec.querySelector('.back-btn').addEventListener('click', () => {
-    oceanSection.classList.remove('viewing');
-    oceanSection.scrollIntoView({ behavior:'smooth', block:'start' });
+    history.back();
   });
 
   oceanSection.classList.add('viewing');
+  history.pushState({ viewing: true, lookIndex: i }, '', `#look-${i + 1}`);
   lookDetail.scrollIntoView({ behavior:'smooth', block:'start' });
 }
 
@@ -741,6 +744,14 @@ looks.forEach((l, i) => {
   `;
   bottle.addEventListener('click', () => openBottle(bottle, l, i));
   oceanSurface.appendChild(bottle);
+});
+
+// ---- browser back button support ----
+window.addEventListener('popstate', (e) => {
+  if(!e.state || !e.state.viewing){
+    oceanSection.classList.remove('viewing');
+    oceanSection.scrollIntoView({ behavior:'smooth', block:'start' });
+  }
 });
 
 // ---- typewriter hero ----
