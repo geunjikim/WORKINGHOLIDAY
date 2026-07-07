@@ -215,6 +215,24 @@
   }
   .look.in-view .cut-viewport{ opacity:1; transform:translateY(0); }
   .cut-viewport:active{ cursor:grabbing; }
+
+  .cut-nav{
+    position:absolute; top:0; bottom:0; width:22%;
+    z-index:10; display:flex; align-items:center;
+    opacity:0; transition:opacity .25s ease;
+    cursor:pointer; border:none; background:transparent;
+  }
+  .cut-nav-prev{ left:0; justify-content:flex-start; padding-left:14px; }
+  .cut-nav-next{ right:0; justify-content:flex-end; padding-right:14px; }
+  .cut-viewport:hover .cut-nav{ opacity:1; }
+  @media (hover:none){ .cut-nav{ opacity:0.5; } }
+  .cut-nav-icon{
+    font-size:28px;
+    color:rgba(0,0,0,0.35);
+    font-family:'JetBrains Mono', monospace;
+    pointer-events:none;
+    line-height:1;
+  }
   .cut-track{
     display:flex;
     height:100%;
@@ -622,6 +640,8 @@ function showLook(l, i){
   sec.innerHTML = `
     <div class="look-visual" style="--swatch:${swatches[i % swatches.length]}">
       <div class="cut-viewport">
+        <button class="cut-nav cut-nav-prev" type="button" aria-label="이전"><div class="cut-nav-icon">‹</div></button>
+        <button class="cut-nav cut-nav-next" type="button" aria-label="다음"><div class="cut-nav-icon">›</div></button>
         <div class="cut-track${cutCount <= 1 ? ' single' : ''}">
           ${Array.from({length: cutCount}).map((_, c) => `
             <div class="cut-slide" style="background:linear-gradient(${angles[c % angles.length]}deg, var(--paper) 0%, var(--swatch, var(--paper-deep)) 55%, var(--deep) 130%)">
@@ -677,10 +697,13 @@ function showLook(l, i){
       if(!dragging) return;
       dragging = false;
       track.classList.remove('dragging');
-      if(currentX < -20) goTo(cutIndex + 1);
-      else if(currentX > 20) goTo(cutIndex - 1);
+      if(currentX < -15) goTo(cutIndex + 1);
+      else if(currentX > 15) goTo(cutIndex - 1);
       else goTo(cutIndex);
     };
+
+    viewport.querySelector('.cut-nav-prev').addEventListener('click', () => goTo(cutIndex - 1));
+    viewport.querySelector('.cut-nav-next').addEventListener('click', () => goTo(cutIndex + 1));
 
     viewport.addEventListener('pointerdown', (e) => onDown(e.clientX));
     viewport.addEventListener('pointermove', (e) => { e.preventDefault(); onMove(e.clientX); }, { passive:false });
@@ -698,7 +721,7 @@ function showLook(l, i){
   });
 
   oceanSection.classList.add('viewing');
-  history.pushState({ viewing: true, lookIndex: i }, '', `#look-${i + 1}`);
+  try{ history.pushState({ viewing: true, lookIndex: i }, '', `#look-${i + 1}`); } catch(e){}
   lookDetail.scrollIntoView({ behavior:'smooth', block:'start' });
 }
 
